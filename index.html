@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎥 Мои видео</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --border: 1px solid #e9ecef;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #121212;
+                --bg-secondary: #1e1e1e;
+                --text-primary: #f8f9fa;
+                --text-secondary: #adb5bd;
+                --card-bg: #2d2d2d;
+                --shadow: 0 4px 12px rgba(0,0,0,0.3);
+                --border: 1px solid #333;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: var(--border);
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 */
+            background: #000;
+        }
+
+        .video-wrapper iframe,
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .video-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .video-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: var(--border);
+        }
+
+        @media (max-width: 768px) {
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Мои видео</h1>
+            <p class="subtitle">Здесь я публикую свои лучшие работы — от личных проектов до YouTube-роликов.</p>
+        </header>
+
+        <div class="videos-grid">
+
+            <!-- Пример 1: YouTube видео -->
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">Путешествие в горы</h3>
+                    <div class="video-meta">Опубликовано 12 мая 2025</div>
+                    <p class="video-desc">Съёмка на GoPro в Кавказских горах. Видео без монтажа — только живые эмоции и природа.</p>
+                </div>
+            </div>
+
+            <!-- Пример 2: Собственное видео -->
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <!-- Если есть своё видео — раскомментируй и замени путь -->
+                    
+                    <video controls poster="videos/thumb1.jpg">
+                        <source src="videos/video_1.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                    
+		<!--
+                    <iframe 
+                        src="https://www.youtube.com/embed/fRh_vgS2dFE" 
+                        allowfullscreen>
+                    </iframe>
+                -->
+		
+		</div>
+                <div class="video-info">
+                    <h3 class="video-title">Закат над океаном</h3>
+                    <div class="video-meta">Опубликовано 3 апреля 2025</div>
+                    <p class="video-desc">Моё авторское видео, снятое в Калифорнии. Звук волн и крики чаек — настоящее ASMR.</p>
+                </div>
+            </div>
+		
+
+            <!-- Пример 3: Ещё одно видео -->
+            <div class="video-card">
+                <div class="video-wrapper">
+                    <iframe 
+                        src="https://www.youtube.com/embed/9bZkp7q19f0" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="video-info">
+                    <h3 class="video-title">Танцы под дождём</h3>
+                    <div class="video-meta">Опубликовано 20 марта 2025</div>
+                    <p class="video-desc">Эксперимент с движением и водой. Снято на iPhone 15 Pro в режиме ProRes.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            &copy; 2025 Мой видеоархив. Все права защищены.
+        </footer>
+    </div>
+</body>
+</html>

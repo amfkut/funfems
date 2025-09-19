@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru" data-lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎥 Мои видео</title>
+
+    <!-- Disqus -->
+    <script>
+        var disqus_config = function () {
+            this.page.url = window.location.href;
+            this.page.identifier = window.location.pathname;
+        };
+    </script>
+
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --border: 1px solid #e9ecef;
+            --accent: #4ecdc4;
+            --danger: #ff6b6b;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #121212;
+                --bg-secondary: #1e1e1e;
+                --text-primary: #f8f9fa;
+                --text-secondary: #adb5bd;
+                --card-bg: #2d2d2d;
+                --shadow: 0 4px 12px rgba(0,0,0,0.3);
+                --border: 1px solid #333;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+            transition: background 0.3s ease;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 📱 Адаптивное меню */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--danger), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--accent);
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        /* 🔍 Поиск */
+        .search-box {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* 📂 Категории */
+        .categories {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .category-btn.active,
+        .category-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* 🎞️ Видео сетка */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: var(--border);
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .video-card.filtered {
+            display: none;
+        }
+
+        .video-card.fade {
+            opacity: 0.4;
+            transform: translateY(10px);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 */
+            background: #000;
+        }
+
+        .video-wrapper iframe,
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .video-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        /* 💬 Disqus */
+        #disqus_thread {
+            margin-top: 40px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+        }
+
+        /* 🌐 Язык */
+        .lang-switcher {
+            margin-left: auto;
+        }
+
+        .lang-switcher button {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .lang-switcher button.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: var(--border);
+        }
+
+        /* 📱 Мобильное меню */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                background: var(--bg-secondary);
+                padding: 15px;
+                border-radius: 12px;
+                margin-top: 15px;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .videos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1 data-key="title">Мои видео</h1>
+            </div>
+
+            <button class="mobile-toggle" id="mobileToggle">☰</button>
+
+            <nav class="lang-switcher">
+                <button class="lang-btn active" data-lang="ru">Русский</button>
+                <button class="lang-btn" data-lang="en">English</button>
+            </nav>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" data-key="nav_home">Главная</a></li>
+                <li><a href="#about" data-key="nav_about">Обо мне</a></li>
+                <li><a href="#contact" data-key="nav_contact">Контакты</a></li>
+            </ul>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск по видео...">
+        </div>
+
+        <div class="categories">
+            <button class="category-btn active" data-category="all" data-key="cat_all">Все</button>
+            <button class="category-btn" data-category="travel" data-key="cat_travel">Путешествия</button>
+            <button class="category-btn" data-category="creative" data-key="cat_creative">Творчество</button>
+            <button class="category-btn" data-category="education" data-key="cat_education">Обучение</button>
+        </div>
+
+        <div class="videos-grid" id="videosGrid">
+            <!-- Видео будут вставляться сюда через JS -->
+        </div>
+
+        <div id="disqus_thread"></div>
+
+        <footer>
+            <p data-key="footer">&copy; 2025 Мой видеоархив. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <!-- 📂 Данные видео (можно вынести в отдельный JSON-файл позже) -->
+    <script>
+        const videoData = {
+            ru: {
+                title: "Мои видео",
+                nav_home: "Главная",
+                nav_about: "Обо мне",
+                nav_contact: "Контакты",
+                cat_all: "Все",
+                cat_travel: "Путешествия",
+                cat_creative: "Творчество",
+                cat_education: "Обучение",
+                footer: "&copy; 2025 Мой видеоархив. Все права защищены.",
+                placeholder: "🔍 Поиск по видео...",
+                views: "просмотров"
+            },
+            en: {
+                title: "My Videos",
+                nav_home: "Home",
+                nav_about: "About",
+                nav_contact: "Contact",
+                cat_all: "All",
+                cat_travel: "Travel",
+                cat_creative: "Creative",
+                cat_education: "Education",
+                footer: "&copy; 2025 My Video Archive. All rights reserved.",
+                placeholder: "🔍 Search videos...",
+                views: "views"
+            }
+        };
+
+        const videos = [
+            {
+                id: 1,
+                title: { ru: "Путешествие в горы", en: "Mountain Trip" },
+                desc: { ru: "Съёмка на GoPro в Кавказских горах.", en: "Filmed on GoPro in Caucasus Mountains." },
+                category: "travel",
+                youtubeId: "dQw4w9WgXcQ",
+                poster: "videos/thumb1.jpg",
+                src: "videos/my-video.mp4",
+                date: "2025-05-12"
+            },
+            {
+                id: 2,
+                title: { ru: "Закат над океаном", en: "Ocean Sunset" },
+                desc: { ru: "Моё авторское видео, снятое в Калифорнии.", en: "My original video shot in California." },
+                category: "creative",
+                youtubeId: "fRh_vgS2dFE",
+                date: "2025-04-03"
+            },
+            {
+                id: 3,
+                title: { ru: "Как учить Python", en: "How to Learn Python" },
+                desc: { ru: "Полный гайд для начинающих.", en: "Complete beginner's guide." },
+                category: "education",
+                youtubeId: "9bZkp7q19f0",
+                date: "2025-03-20"
+            }
+        ];
+
+        // 📈 Счётчики просмотров (localStorage)
+        function getViews(videoId) {
+            return parseInt(localStorage.getItem(`views_${videoId}`)) || 0;
+        }
+
+        function incrementViews(videoId) {
+            let views = getViews(videoId) + 1;
+            localStorage.setItem(`views_${videoId}`, views);
+            return views;
+        }
+
+        // 🎨 Рендер видео
+        function renderVideos(lang = 'ru', category = 'all', searchTerm = '') {
+            const grid = document.getElementById('videosGrid');
+            grid.innerHTML = '';
+
+            let filtered = videos.filter(video => {
+                const matchesCategory = category === 'all' || video.category === category;
+                const matchesSearch = video.title[lang].toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                      video.desc[lang].toLowerCase().includes(searchTerm.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            filtered.forEach(video => {
+                const views = incrementViews(video.id);
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.dataset.category = video.category;
+
+                card.innerHTML = `
+                    <div class="video-wrapper">
+                        ${video.youtubeId 
+                            ? `<iframe src="https://www.youtube.com/embed/${video.youtubeId}" allowfullscreen></iframe>`
+                            : `<video controls poster="${video.poster || ''}">
+                                 <source src="${video.src}" type="video/mp4">
+                                 Your browser does not support the video tag.
+                               </video>`
+                        }
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">${video.title[lang]}</h3>
+                        <div class="video-meta">
+                            <span>${new Date(video.date).toLocaleDateString(lang === 'ru' ? 'ru-RU' : 'en-US')}</span>
+                            <span>${views} ${videoData[lang].views}</span>
+                        </div>
+                        <p class="video-desc">${video.desc[lang]}</p>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // 🔍 Поиск
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const term = this.value;
+            const activeCategory = document.querySelector('.category-btn.active').dataset.category;
+            const lang = document.documentElement.dataset.lang;
+            renderVideos(lang, activeCategory, term);
+        });
+
+        // 📂 Категории
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const category = this.dataset.category;
+                const lang = document.documentElement.dataset.lang;
+                const searchTerm = document.getElementById('searchInput').value;
+                renderVideos(lang, category, searchTerm);
+            });
+        });
+
+        // 🌐 Язык
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const lang = this.dataset.lang;
+                document.documentElement.dataset.lang = lang;
+                document.documentElement.lang = lang;
+
+                // Обновляем тексты
+                document.querySelectorAll('[data-key]').forEach(el => {
+                    const key = el.dataset.key;
+                    el.innerHTML = videoData[lang][key] || el.innerHTML;
+                });
+
+                document.getElementById('searchInput').placeholder = videoData[lang].placeholder;
+
+                // Перерендер видео
+                const activeCategory = document.querySelector('.category-btn.active').dataset.category;
+                const searchTerm = document.getElementById('searchInput').value;
+                renderVideos(lang, activeCategory, searchTerm);
+            });
+        });
+
+        // 📱 Мобильное меню
+        document.getElementById('mobileToggle').addEventListener('click', function() {
+            document.getElementById('navMenu').classList.toggle('active');
+        });
+
+        // 🚀 Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            const lang = document.documentElement.dataset.lang;
+            renderVideos(lang, 'all', '');
+            
+            // Загружаем Disqus (замени SHORTNAME на свой!)
+            const disqusShortname = 'your-disqus-shortname'; // ← ЗАМЕНИ МЕНЯ!
+            if (disqusShortname && disqusShortname !== 'your-disqus-shortname') {
+                const d = document, s = d.createElement('script');
+                s.src = `https://${disqusShortname}.disqus.com/embed.js`;
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            } else {
+                document.getElementById('disqus_thread').innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-secondary)">💬 Чтобы включить комментарии, зарегистрируйся на <a href="https://disqus.com" target="_blank">Disqus.com</a> и замени SHORTNAME в коде.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
